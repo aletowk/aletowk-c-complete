@@ -1,0 +1,7 @@
+#documentation
+doc/html
+
+# C
+bin/
+obj/
+
