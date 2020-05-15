@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+#include "static_allocation.h"
 
 /**
  * @brief      Main function of the API
@@ -12,6 +12,6 @@
  */
 int main(void)
 {
-	
+	test_static_malloc();
 	return 0;
 }

@@ -31,8 +31,6 @@ static STATE__E_ERROR STATE_MANAGER__update(void);
 static STATE__E_ERROR STATE_MANAGER__execution_loop(void);
 static STATE__E_ERROR STATE_MANAGE__change_state(STATE__E_STATE_ID target_state);
 
-static void state_command_sender_simulator(void);
-
 #define COMM_QUEUE_SIZE (3)
 #define COMM_QUEUE_ITEM_SIZE (3)
 
