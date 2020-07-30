@@ -28,6 +28,7 @@ INCLUDES   += -Isrc/queue/
 INCLUDES   += -Isrc/state_manager/
 INCLUDES   += -Isrc/tcp_server/
 INCLUDES   += -Isrc/static-allocation/
+INCLUDES   += -Isrc/ram_storage/
 
 OPTIMIZATION	= -O0
 DEF_THREAD = -D_REENTRANT
@@ -45,6 +46,7 @@ VPATH   += src/queue/
 VPATH   += src/state_manager/
 VPATH   += src/tcp_server/
 VPATH   += src/static-allocation/
+VPATH   += src/ram_storage/
 
 # Objects build from C source files
 C_OBJECTS	 = main.o
@@ -55,6 +57,7 @@ C_OBJECTS	+= state_survival.o
 C_OBJECTS	+= state_mission.o
 C_OBJECTS	+= tcp_server.o
 C_OBJECTS	+= static_allocation.o
+C_OBJECTS	+= ram_storage.o
 
 #Append OBJ and BIN directories to output filename
 OUTPUT_BIN	= $(BIN)/$(OUTPUT).bin
