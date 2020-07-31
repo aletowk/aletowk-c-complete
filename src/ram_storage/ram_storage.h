@@ -43,6 +43,8 @@ int RAM_STORAGE_write_element(const RAM_STORAGE__T_ELEMENT * element);
 int RAM_STORAGE_read_elements_between_two_dates(RAM_STORAGE__T_ELEMENT * elements_to_read, unsigned int max_element_to_read,
 	 											unsigned int *read_number, unsigned int start_time, unsigned int end_time );
 
+int RAM_STORAGE_delete_up_to_time(unsigned int time);
+
 void RAM_STORAGE_print_memory_heap(void);
 
 void print_element(RAM_STORAGE__T_ELEMENT elem);

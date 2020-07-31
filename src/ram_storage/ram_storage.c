@@ -11,14 +11,15 @@ static RAM_STORAGE__T_MEMORY_STORAGE RAM_STORAGE_G_ram_handler;
 static RAM_STORAGE__T_ELEMENT test_sample[] = 
 		{
 			{
-				.time = 11, .buffer_length = 4, .buffer = {0x22,13,14,15}
-			},
-			{
 				.time = 15, .buffer_length = 4, .buffer = {0x32,13,14,15}
 			},
 			{
 				.time = 16, .buffer_length = 4, .buffer = {0x42,13,14,15}
+			},
+			{
+				.time = 18, .buffer_length = 4, .buffer = {0x22,13,14,15}
 			}
+
 		};
 
 
@@ -45,10 +46,11 @@ void test_ram_storage(void)
 		}
 	}
 
-	RAM_STORAGE_print_memory_heap();
+	// RAM_STORAGE_print_memory_heap();
 
 
-	RAM_STORAGE_read_elements_between_two_dates(NULL, 0,0,16,16 );
+	// RAM_STORAGE_read_elements_between_two_dates(NULL, 0,0,15,15 );
+	RAM_STORAGE_delete_up_to_time(20);
 }
 
 static void clean_heap(void)
@@ -191,59 +193,6 @@ static RAM_STORAGE__T_ELEMENT * search_element_start_time(unsigned int time)
 	{
 		browser = RAM_STORAGE_G_ram_handler.write_to - sizeof(RAM_STORAGE__T_ELEMENT);
 	}
-
-	// while( (!found) && (counter < RAM_STORAGE_G_ram_handler.number_of_elements) )
-	// {
-	// 	if( ((RAM_STORAGE__T_ELEMENT*)browser)->time > time )
-	// 	{			
-	// 		/* Last element searched, we reached the end of elements and if the
-	// 		 * time is greater than we start read by this one */
-	// 		if(counter+1 == RAM_STORAGE_G_ram_handler.number_of_elements)
-	// 		{
-	// 			return (RAM_STORAGE__T_ELEMENT*)browser;
-	// 		}
-	// 		else
-	// 		{	
-	// 			/* Does the previous is also greater than time ? */
-	// 			if( (browser - sizeof(RAM_STORAGE__T_ELEMENT)) < RAM_STORAGE_G_ram_handler.head )
-	// 			{
-	// 				if( ((RAM_STORAGE__T_ELEMENT*)RAM_STORAGE_G_ram_handler.tail)->time > time)
-	// 				{
-	// 					/* Yes, continue to search */
-	// 					found = 0;
-	// 				}
-	// 				else
-	// 				{
-	// 					/* No */
-	// 					return (RAM_STORAGE__T_ELEMENT*)browser;
-	// 				}
-	// 			}
-	// 			else
-	// 			{
-	// 				if( ((RAM_STORAGE__T_ELEMENT*)(browser - sizeof(RAM_STORAGE__T_ELEMENT)))->time > time )
-	// 				{
-	// 					found = 0;
-	// 				}
-	// 				else
-	// 				{	
-	// 					return (RAM_STORAGE__T_ELEMENT*)browser;
-	// 				}
-	// 			}
-	// 		}
-			
-	// 	}
-
-	// 	if( (browser - sizeof(RAM_STORAGE__T_ELEMENT)) < RAM_STORAGE_G_ram_handler.head)
-	// 	{
-	// 		browser = RAM_STORAGE_G_ram_handler.tail;
-	// 	}
-	// 	else
-	// 	{
-	// 		browser -= sizeof(RAM_STORAGE__T_ELEMENT);
-	// 	}
-	// 	counter++;
-	// }
-
 	return NULL;
 }
 
@@ -342,7 +291,7 @@ static RAM_STORAGE__T_ELEMENT * search_element_end_time(unsigned int time,const 
 // 	}
 // }
 
-static unsigned int get_number_of_elements_to_read(RAM_STORAGE__T_ELEMENT const * start,RAM_STORAGE__T_ELEMENT const * end)
+static unsigned int get_number_of_elements_between_positions(RAM_STORAGE__T_ELEMENT const * start,RAM_STORAGE__T_ELEMENT const * end)
 {
 	RAM_STORAGE__T_ADDRESS_TYPE start_add = (RAM_STORAGE__T_ADDRESS_TYPE)start;
 	RAM_STORAGE__T_ADDRESS_TYPE end_add = (RAM_STORAGE__T_ADDRESS_TYPE)end;
@@ -384,7 +333,7 @@ int RAM_STORAGE_read_elements_between_two_dates(RAM_STORAGE__T_ELEMENT * element
 			printf("Last element is :\n\r");
 			print_element(*last_element);
 
-			printf("Number of elements to read : %d\n\r", get_number_of_elements_to_read(first_element,last_element) );
+			printf("Number of elements to read : %d\n\r", get_number_of_elements_between_positions(first_element,last_element) );
 		}
 	}
 
@@ -392,6 +341,103 @@ int RAM_STORAGE_read_elements_between_two_dates(RAM_STORAGE__T_ELEMENT * element
 	RAM_STORAGE__M_UNUSED(max_element_to_read);
 	RAM_STORAGE__M_UNUSED(read_number);
 	return ret_value;
+}
+
+int RAM_STORAGE_delete_up_to_time(unsigned int time)
+{
+	unsigned int counter = 0, number_of_elements_to_delete = 0;
+	unsigned char found = 0;
+	RAM_STORAGE__T_ADDRESS_TYPE browser = NULL;
+	RAM_STORAGE__T_ADDRESS_TYPE end_delete = NULL;
+
+	/* Search the elements that have time less or egual to time. Start by looking from last written */
+	browser = RAM_STORAGE_G_ram_handler.write_to; /* write_to should be the oldest */
+	if(browser - sizeof(RAM_STORAGE__T_ELEMENT) < RAM_STORAGE_G_ram_handler.head)
+	{
+		browser = RAM_STORAGE_G_ram_handler.tail;
+	}
+	else
+	{
+		browser -= sizeof(RAM_STORAGE__T_ELEMENT);
+	}
+
+	while(!found && (counter < RAM_STORAGE_G_ram_handler.number_of_elements))
+	{
+		if( ((RAM_STORAGE__T_ELEMENT*)browser)->time <= time )
+		{
+			if(!end_delete)
+			{
+				end_delete = browser;				
+			}
+
+			if(counter+1 == RAM_STORAGE_G_ram_handler.number_of_elements)
+			{
+				found = 1;
+			}
+			/* is it the 'oldest' time less than "time" ? */
+			if(!found)
+			{
+				if( (browser - sizeof(RAM_STORAGE__T_ELEMENT)) < RAM_STORAGE_G_ram_handler.head )
+				{
+					if( ((RAM_STORAGE__T_ELEMENT*)RAM_STORAGE_G_ram_handler.tail)->time <= time)
+					{
+						found = 0;
+					}
+					else
+					{
+						found = 1;
+					}
+				}
+				else
+				{
+					if( ((RAM_STORAGE__T_ELEMENT*)(browser - sizeof(RAM_STORAGE__T_ELEMENT)))->time <= time )
+					{
+						found = 0;
+					}
+					else
+					{	
+						found = 1;
+					}
+				}
+			}
+			
+		}
+
+		if(!found)
+		{
+			if( (browser - sizeof(RAM_STORAGE__T_ELEMENT)) < RAM_STORAGE_G_ram_handler.head)
+			{
+				browser = RAM_STORAGE_G_ram_handler.tail;
+			}
+			else
+			{
+				browser -= sizeof(RAM_STORAGE__T_ELEMENT);
+			}
+			counter++;
+		}
+	}
+
+	if(!found)
+	{
+		return -1;
+	}
+
+	number_of_elements_to_delete = get_number_of_elements_between_positions(browser,end_delete);
+
+	printf("There is %d elements to delete !\n",number_of_elements_to_delete);
+	for(counter = 0 ; counter < number_of_elements_to_delete ; counter++)
+	{
+		print_element(*(RAM_STORAGE__T_ELEMENT*)browser);
+		if(browser + (sizeof(RAM_STORAGE__T_ELEMENT)) > RAM_STORAGE_G_ram_handler.tail)
+		{
+			browser = RAM_STORAGE_G_ram_handler.head;
+		}
+		else
+		{
+			browser += sizeof(RAM_STORAGE__T_ELEMENT); 
+		}
+	}
+	return 0;
 }
 
 
