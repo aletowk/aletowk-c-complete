@@ -22,11 +22,21 @@ static RAM_STORAGE__T_ELEMENT test_sample[] =
 
 		};
 
-
+#define START_READ_TIME (15)
+#define END_READ_TIME (18)
 void test_ram_storage(void)
 {
 	int ret_value = 0;
 	unsigned int i = 0;
+	unsigned int read_elements = 0;
+	RAM_STORAGE__T_ELEMENT read_list[5] = { 
+											{.time = 0,.buffer_length = 0,.buffer = {0} },
+											{.time = 0,.buffer_length = 0,.buffer = {0} },
+											{.time = 0,.buffer_length = 0,.buffer = {0} },
+											{.time = 0,.buffer_length = 0,.buffer = {0} },
+											{.time = 0,.buffer_length = 0,.buffer = {0} }
+										  };
+
 
 	printf("RAM STORAGE TEST\n\r");
 
@@ -49,8 +59,20 @@ void test_ram_storage(void)
 	// RAM_STORAGE_print_memory_heap();
 
 
-	// RAM_STORAGE_read_elements_between_two_dates(NULL, 0,0,15,15 );
-	RAM_STORAGE_delete_up_to_time(20);
+	ret_value = RAM_STORAGE_read_elements_between_two_dates(read_list,5,&read_elements,START_READ_TIME,END_READ_TIME );
+	if(ret_value)
+	{
+		printf("ERROR : RAM_STORAGE_read_elements_between_two_dates code %d\n\r",ret_value);
+	}
+	else
+	{
+		printf("Read %d elements from %d to %d\n\r",read_elements,START_READ_TIME,END_READ_TIME);
+		for(i = 0 ; i < read_elements;i++)
+		{
+			print_element(read_list[i]);
+		}
+	}
+	// RAM_STORAGE_delete_up_to_time(20);
 }
 
 static void clean_heap(void)
@@ -309,9 +331,11 @@ static unsigned int get_number_of_elements_between_positions(RAM_STORAGE__T_ELEM
 int RAM_STORAGE_read_elements_between_two_dates(RAM_STORAGE__T_ELEMENT * elements_to_read, unsigned int max_element_to_read,
 	 											unsigned int *read_number, unsigned int start_time, unsigned int end_time )
 {
-	int ret_value = 0;
+	unsigned int i = 0;
 	RAM_STORAGE__T_ELEMENT * first_element = NULL;
 	RAM_STORAGE__T_ELEMENT * last_element = NULL;
+	RAM_STORAGE__T_ADDRESS_TYPE browser = NULL;
+
 	/* First search if one element */
 	first_element = search_element_start_time(start_time);
 	if(first_element == NULL)
@@ -320,9 +344,8 @@ int RAM_STORAGE_read_elements_between_two_dates(RAM_STORAGE__T_ELEMENT * element
 	}
 	else
 	{
-		printf("First element is : \n\r");
-		print_element(*first_element);
-
+		// printf("First element is : \n\r");
+		// print_element(*first_element);
 		last_element = search_element_end_time(end_time,first_element);
 		if(last_element == NULL)
 		{
@@ -330,17 +353,37 @@ int RAM_STORAGE_read_elements_between_two_dates(RAM_STORAGE__T_ELEMENT * element
 		}
 		else
 		{
-			printf("Last element is :\n\r");
-			print_element(*last_element);
-
-			printf("Number of elements to read : %d\n\r", get_number_of_elements_between_positions(first_element,last_element) );
+			// printf("Last element is :\n\r");
+			// print_element(*last_element);
+			*read_number = get_number_of_elements_between_positions(first_element,last_element);
+			// printf("Number of elements to read : %d\n\r", *read_number);
 		}
 	}
 
-	RAM_STORAGE__M_UNUSED(elements_to_read);
-	RAM_STORAGE__M_UNUSED(max_element_to_read);
-	RAM_STORAGE__M_UNUSED(read_number);
-	return ret_value;
+	if( (*read_number) == 0)
+	{
+		return 1;
+	}
+
+	if( (*read_number) > max_element_to_read )
+	{
+		return -3;
+	}
+
+	browser = (RAM_STORAGE__T_ADDRESS_TYPE)first_element;
+	for( i = 0 ; i < (*read_number) ; i++)
+	{
+		memcpy(&elements_to_read[i],browser,sizeof(RAM_STORAGE__T_ELEMENT));
+		if(  (browser + sizeof(RAM_STORAGE__T_ELEMENT)) > RAM_STORAGE_G_ram_handler.tail)
+		{
+			browser = RAM_STORAGE_G_ram_handler.head;
+		}
+		else
+		{
+			browser += sizeof(RAM_STORAGE__T_ELEMENT);
+		}
+	}
+	return 0;
 }
 
 int RAM_STORAGE_delete_up_to_time(unsigned int time)
