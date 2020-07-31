@@ -11,19 +11,26 @@ static RAM_STORAGE__T_MEMORY_STORAGE RAM_STORAGE_G_ram_handler;
 static RAM_STORAGE__T_ELEMENT test_sample[] = 
 		{
 			{
-				.time = 15, .buffer_length = 4, .buffer = {0x32,13,14,15}
+				.time = 0, .buffer_length = 4, .buffer = {0x32,13,14,15}
 			},
 			{
-				.time = 16, .buffer_length = 4, .buffer = {0x42,13,14,15}
+				.time = 0, .buffer_length = 4, .buffer = {0x42,13,14,15}
 			},
 			{
-				.time = 18, .buffer_length = 4, .buffer = {0x22,13,14,15}
+				.time = 0, .buffer_length = 4, .buffer = {0x22,13,14,15}
 			}
 
 		};
 
-#define START_READ_TIME (15)
-#define END_READ_TIME (18)
+static unsigned int get_time(void)
+{
+	static unsigned int default_time = 10;
+	default_time++;
+	return default_time;
+}
+
+#define START_READ_TIME (9)
+#define END_READ_TIME (15)
 void test_ram_storage(void)
 {
 	int ret_value = 0;
@@ -40,15 +47,132 @@ void test_ram_storage(void)
 
 	printf("RAM STORAGE TEST\n\r");
 
-	ret_value = RAM_STORAGE_init_ram_memory_storage(3);
+
+	// /* ************************** */
+	// /* *** Read Test Scenario *** */
+	// printf("==> Read Test Scenario\n\r");
+	// /* Creates a memory storage of 5 elemen and add 5 element time from 10 to 15 */
+	// ret_value = RAM_STORAGE_init_ram_memory_storage(5);
+	// if(ret_value)
+	// {
+	// 	printf("ERROR : RAM_STORAGE_init_ram_memory_storage code %d \n\r",ret_value);
+	// }
+	// /* Send */
+	// for( i = 0 ; i < 3 ; i++)
+	// {
+	// 	test_sample[i].time = get_time();
+	// 	ret_value = RAM_STORAGE_write_element(&test_sample[i]);
+	// 	if(ret_value)
+	// 	{
+	// 		printf("ERROR : RAM_STORAGE_write_element code %d (adding step i : %d) \n\r",ret_value,i);	
+	// 	}
+	// }
+	// /* Send */
+	// for( i = 0 ; i < 2 ; i++)
+	// {
+	// 	test_sample[i].time = get_time();
+	// 	ret_value = RAM_STORAGE_write_element(&test_sample[i]);
+	// 	if(ret_value)
+	// 	{
+	// 		printf("ERROR : RAM_STORAGE_write_element code %d (adding step i : %d) \n\r",ret_value,i);	
+	// 	}
+	// }
+
+	// RAM_STORAGE_print_memory_heap();
+	// /* Ask to read up to 14 */
+	// ret_value = RAM_STORAGE_read_elements_between_two_dates(read_list,5,&read_elements,0,14 );
+	// if(ret_value)
+	// {
+	// 	printf("ERROR : RAM_STORAGE_read_elements_between_two_dates code %d\n\r",ret_value);
+	// }
+	// else
+	// {
+	// 	printf("Read %d elements from %d to %d\n\r",read_elements,0,14);
+	// 	for(i = 0 ; i < read_elements;i++)
+	// 	{
+	// 		print_element(read_list[i]);
+	// 	}
+	// }
+	// /* *** End of read scenario *** */
+	// /* **************************** */
+
+
+
+ //    /* **************************** */
+	// /* *** Delete Test Scenario *** */
+	// printf("==> Delete Test Scenario\n\r");
+	// /* Create a 5 length storage then send 5 packets (time from 10 to 15) */
+	// ret_value = RAM_STORAGE_init_ram_memory_storage(5);
+	// if(ret_value)
+	// {
+	// 	printf("ERROR : RAM_STORAGE_init_ram_memory_storage code %d \n\r",ret_value);
+	// }
+	// /* Send */
+	// for( i = 0 ; i < 3 ; i++)
+	// {
+	// 	test_sample[i].time = get_time();
+	// 	ret_value = RAM_STORAGE_write_element(&test_sample[i]);
+	// 	if(ret_value)
+	// 	{
+	// 		printf("ERROR : RAM_STORAGE_write_element code %d (adding step i : %d) \n\r",ret_value,i);	
+	// 	}
+	// }
+	// /* Send */
+	// for( i = 0 ; i < 2 ; i++)
+	// {
+	// 	test_sample[i].time = get_time();
+	// 	ret_value = RAM_STORAGE_write_element(&test_sample[i]);
+	// 	if(ret_value)
+	// 	{
+	// 		printf("ERROR : RAM_STORAGE_write_element code %d (adding step i : %d) \n\r",ret_value,i);	
+	// 	}
+	// }
+	// /* Delete All packets up to time = 14 (up to the previous last added) */
+	// RAM_STORAGE_delete_up_to_time(14);
+	// RAM_STORAGE_print_memory_heap();
+	// /* Add 3 new elements (from 15 to 17) (loop from tail to head of memory space) */
+	// for( i = 0 ; i < 3 ; i++)
+	// {
+	// 	test_sample[i].time = get_time();
+	// 	ret_value = RAM_STORAGE_write_element(&test_sample[i]);
+	// 	if(ret_value)
+	// 	{
+	// 		printf("ERROR : RAM_STORAGE_write_element code %d (adding step i : %d) \n\r",ret_value,i);	
+	// 	}
+	// }
+	// /* Prints how it added the last 3 elements */
+	// RAM_STORAGE_print_memory_heap();
+	// /* Delete Up to time = 17 (it should only have  the last added element timetag to 17) */
+	// RAM_STORAGE_delete_up_to_time(16);
+	// RAM_STORAGE_print_memory_heap();
+
+	// /* *** End of delete scenario *** */
+	// /* ****************************** */
+	
+	/* ************************************* */
+	/* *** Read and delete Test Scenario *** */
+	/*     (complete the read test)          */
+	printf("==> Read Test Scenario\n\r");
+	/* Creates a memory storage of 5 elemen and add 5 element time from 10 to 15 */
+	ret_value = RAM_STORAGE_init_ram_memory_storage(5);
 	if(ret_value)
 	{
 		printf("ERROR : RAM_STORAGE_init_ram_memory_storage code %d \n\r",ret_value);
 	}
-
 	/* Send */
 	for( i = 0 ; i < 3 ; i++)
 	{
+		test_sample[i].time = get_time();
+		ret_value = RAM_STORAGE_write_element(&test_sample[i]);
+		if(ret_value)
+		{
+			printf("ERROR : RAM_STORAGE_write_element code %d (adding step i : %d) \n\r",ret_value,i);	
+		}
+	}
+	/* Send */
+	for( i = 0 ; i < 2 ; i++)
+	{
+		test_sample[i].time = get_time();
 		ret_value = RAM_STORAGE_write_element(&test_sample[i]);
 		if(ret_value)
 		{
@@ -56,23 +180,51 @@ void test_ram_storage(void)
 		}
 	}
 
-	// RAM_STORAGE_print_memory_heap();
-
-
-	ret_value = RAM_STORAGE_read_elements_between_two_dates(read_list,5,&read_elements,START_READ_TIME,END_READ_TIME );
+	RAM_STORAGE_print_memory_heap();
+	/* Ask to read up to 14 */
+	ret_value = RAM_STORAGE_read_elements_between_two_dates(read_list,5,&read_elements,0,14 );
 	if(ret_value)
 	{
 		printf("ERROR : RAM_STORAGE_read_elements_between_two_dates code %d\n\r",ret_value);
 	}
 	else
 	{
-		printf("Read %d elements from %d to %d\n\r",read_elements,START_READ_TIME,END_READ_TIME);
+		printf("Read %d elements from %d to %d\n\r",read_elements,0,14);
 		for(i = 0 ; i < read_elements;i++)
 		{
 			print_element(read_list[i]);
 		}
 	}
-	// RAM_STORAGE_delete_up_to_time(20);
+
+	/* Delete Up to time = 14 */
+	RAM_STORAGE_delete_up_to_time(14);
+	/* And add 2 elements (so newest time is 17) */
+	for( i = 0 ; i < 2 ; i++)
+	{
+		test_sample[i].time = get_time();
+		ret_value = RAM_STORAGE_write_element(&test_sample[i]);
+		if(ret_value)
+		{
+			printf("ERROR : RAM_STORAGE_write_element code %d (adding step i : %d) \n\r",ret_value,i);	
+		}
+	}
+	RAM_STORAGE_print_memory_heap();
+	/* Ask to read up to 16 */
+	ret_value = RAM_STORAGE_read_elements_between_two_dates(read_list,5,&read_elements,0,16 );
+	if(ret_value)
+	{
+		printf("ERROR : RAM_STORAGE_read_elements_between_two_dates code %d\n\r",ret_value);
+	}
+	else
+	{
+		printf("Read %d elements from %d to %d\n\r",read_elements,0,16);
+		for(i = 0 ; i < read_elements;i++)
+		{
+			print_element(read_list[i]);
+		}
+	}
+	/* *** End of read and delete scenario *** */
+	/* *************************************** */
 }
 
 static void clean_heap(void)
@@ -218,6 +370,30 @@ static RAM_STORAGE__T_ELEMENT * search_element_start_time(unsigned int time)
 	return NULL;
 }
 
+static unsigned int get_abs_distance_between_address(RAM_STORAGE__T_ADDRESS_TYPE start, RAM_STORAGE__T_ADDRESS_TYPE end)
+{
+	unsigned int distance = 0;
+	if(end >= start)
+	{
+		distance = end - start;
+		distance += sizeof(RAM_STORAGE__T_ELEMENT); // must take into account the border and the possibility end == start
+	}
+	else
+	{
+		/* Waring about the head-tail junction and the fact that we count head and tail elemens */
+		if(start == (RAM_STORAGE__T_ADDRESS_TYPE)RAM_STORAGE_G_ram_handler.head || start == (RAM_STORAGE__T_ADDRESS_TYPE)RAM_STORAGE_G_ram_handler.tail )
+		{
+			distance += sizeof(RAM_STORAGE__T_ELEMENT);
+		}
+		if(end == (RAM_STORAGE__T_ADDRESS_TYPE)RAM_STORAGE_G_ram_handler.head || end == (RAM_STORAGE__T_ADDRESS_TYPE)RAM_STORAGE_G_ram_handler.tail )
+		{
+			distance += sizeof(RAM_STORAGE__T_ELEMENT);
+		}
+		distance += ((RAM_STORAGE__T_ADDRESS_TYPE)RAM_STORAGE_G_ram_handler.tail - start) + (end - (RAM_STORAGE__T_ADDRESS_TYPE)RAM_STORAGE_G_ram_handler.head);
+	}
+	return distance;
+}
+
 /**
  * @brief      { function_description }
  *
@@ -230,23 +406,34 @@ static RAM_STORAGE__T_ELEMENT * search_element_start_time(unsigned int time)
  */
 static RAM_STORAGE__T_ELEMENT * search_element_end_time(unsigned int time,const RAM_STORAGE__T_ELEMENT * start_elem)
 {
-	unsigned int counter = 0;
+	unsigned int counter = 0, max_readable = 0;
 	unsigned char found = 0;
 	RAM_STORAGE__T_ADDRESS_TYPE browser = NULL;
+	RAM_STORAGE__T_ADDRESS_TYPE last_written = NULL;
 
 	if(start_elem)
 	{
-		counter = ((RAM_STORAGE__T_ADDRESS_TYPE)start_elem) - RAM_STORAGE_G_ram_handler.write_to;
-		counter /= sizeof(RAM_STORAGE__T_ELEMENT);
+		/* MAx readable is between start and last written element so: */
+		if(RAM_STORAGE_G_ram_handler.write_to - sizeof(RAM_STORAGE__T_ELEMENT) < RAM_STORAGE_G_ram_handler.head)
+		{
+			last_written = RAM_STORAGE_G_ram_handler.tail;
+		}
+		else
+		{
+			last_written = RAM_STORAGE_G_ram_handler.write_to - sizeof(RAM_STORAGE__T_ELEMENT);
+		}
+		max_readable = get_abs_distance_between_address((RAM_STORAGE__T_ADDRESS_TYPE)start_elem, last_written);
+		max_readable /= sizeof(RAM_STORAGE__T_ELEMENT);
+		
 		browser = (RAM_STORAGE__T_ADDRESS_TYPE)start_elem;	
 
-		while( (!found) && (counter < RAM_STORAGE_G_ram_handler.number_of_elements) )
+		while( (!found) && (counter < max_readable) )
 		{
 
 			if( 	((RAM_STORAGE__T_ELEMENT*)browser)->time <= time 
 				&&  ((RAM_STORAGE__T_ELEMENT*)browser)->time >= start_elem->time)
 			{
-				if( (counter + 1) == RAM_STORAGE_G_ram_handler.number_of_elements)
+				if( (counter + 1) == max_readable)
 				{
 					/* it s the last element so cause its valid we return it */
 					return ((RAM_STORAGE__T_ELEMENT*)browser);
@@ -317,14 +504,28 @@ static unsigned int get_number_of_elements_between_positions(RAM_STORAGE__T_ELEM
 {
 	RAM_STORAGE__T_ADDRESS_TYPE start_add = (RAM_STORAGE__T_ADDRESS_TYPE)start;
 	RAM_STORAGE__T_ADDRESS_TYPE end_add = (RAM_STORAGE__T_ADDRESS_TYPE)end;
-	
+	unsigned int nb = 0;
+
+
+
 	if(start_add > end_add)
 	{
-		return (((RAM_STORAGE_G_ram_handler.tail - start_add) + (end_add - RAM_STORAGE_G_ram_handler.head))/sizeof(RAM_STORAGE__T_ELEMENT)) + 1;
+		if(start_add == RAM_STORAGE_G_ram_handler.head || start_add == RAM_STORAGE_G_ram_handler.tail)
+		{
+			nb += 1;
+		}
+
+		else if(end_add == RAM_STORAGE_G_ram_handler.head || end_add == RAM_STORAGE_G_ram_handler.tail)
+		{
+			nb += 1;
+		}
+		nb += (((RAM_STORAGE_G_ram_handler.tail - start_add) + (end_add - RAM_STORAGE_G_ram_handler.head))/sizeof(RAM_STORAGE__T_ELEMENT)) + 1;
+		return nb;
 	}
 	else
 	{
-		return ((end_add - start_add)/sizeof(RAM_STORAGE__T_ELEMENT)) + 1;
+		nb += ((end_add - start_add)/sizeof(RAM_STORAGE__T_ELEMENT)) + 1;
+		return nb;
 	}
 }
 
@@ -467,10 +668,14 @@ int RAM_STORAGE_delete_up_to_time(unsigned int time)
 
 	number_of_elements_to_delete = get_number_of_elements_between_positions(browser,end_delete);
 
-	printf("There is %d elements to delete !\n",number_of_elements_to_delete);
+	printf("There is %d elements to delete up to %d !\n",number_of_elements_to_delete,time);
 	for(counter = 0 ; counter < number_of_elements_to_delete ; counter++)
 	{
 		print_element(*(RAM_STORAGE__T_ELEMENT*)browser);
+
+		memset(browser,0,sizeof(RAM_STORAGE__T_ELEMENT));
+		RAM_STORAGE_G_ram_handler.number_of_elements -= 1;
+
 		if(browser + (sizeof(RAM_STORAGE__T_ELEMENT)) > RAM_STORAGE_G_ram_handler.tail)
 		{
 			browser = RAM_STORAGE_G_ram_handler.head;
@@ -495,7 +700,7 @@ static void print_line(unsigned char * buffer, unsigned int size)
 void RAM_STORAGE_print_memory_heap(void)
 {
 	unsigned int i = 0;
-	printf("RAM Storage heap:\n\r");
+	printf("\n\r*** RAM Storage heap: ***\n\r");
 	for(i = 0 ; i < RAM_STORAGE__C_MAX_ELEMENTS_TO_STORE ; i++)
 	{
 		printf("Element %d / %d   : \n\rTime   : %d\n\r",i+1,RAM_STORAGE__C_MAX_ELEMENTS_TO_STORE,RAM_STORAGE_G_MEMORY_HEAP[i].time);
