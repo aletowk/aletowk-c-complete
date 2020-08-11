@@ -225,6 +225,24 @@ void test_ram_storage(void)
 	}
 	/* *** End of read and delete scenario *** */
 	/* *************************************** */
+
+
+	/* *********************** */
+	/* *** Test Get oldest *** */
+	printf("\n\r***********************\n\r");
+	printf("*** Test Get Oldest And Newest ***\n\r");
+	RAM_STORAGE_print_memory_heap();
+
+	unsigned int oldest_time  = 0 ; 
+	unsigned int newest_time = 0;
+
+	RAM_STORAGE_update_with_oldest_time(&oldest_time);
+	printf("The oldest time is : %d\n\r",oldest_time);
+	RAM_STORAGE_update_with_newest_time(&newest_time);
+	printf("The newest time is : %d\n\r",newest_time);
+	printf("*** End Test Get Oldest and Newest***\n\r");
+	printf("***************************\n\r");
+
 }
 
 static void clean_heap(void)
@@ -686,6 +704,72 @@ int RAM_STORAGE_delete_up_to_time(unsigned int time)
 		}
 	}
 	return 0;
+}
+
+
+static void update_descending_browser(RAM_STORAGE__T_ADDRESS_TYPE* browser)
+{
+	if( (*browser - sizeof(RAM_STORAGE__T_ELEMENT)) < RAM_STORAGE_G_ram_handler.head )
+	{
+		*browser = RAM_STORAGE_G_ram_handler.tail;
+	}
+	else
+	{
+		*browser -= sizeof(RAM_STORAGE__T_ELEMENT);
+	}
+}
+
+static unsigned int get_oldest_time(void)
+{
+	RAM_STORAGE__T_ADDRESS_TYPE browser = NULL;
+	unsigned int counter = 0;
+	unsigned int oldest_time = 0;
+	
+	/* Start from last added and look for all elements contained in ram storage */
+	browser = RAM_STORAGE_G_ram_handler.write_to;
+
+	update_descending_browser(&browser);
+	oldest_time = ((RAM_STORAGE__T_ELEMENT*)browser)->time;
+	/* cause of the 2 last lines, it means we already count one element (the last written) so start count from 1 */
+	counter = 1;
+	while((counter < RAM_STORAGE_G_ram_handler.number_of_elements))
+	{
+		update_descending_browser(&browser);
+
+		if( ((RAM_STORAGE__T_ELEMENT*)browser)->time <= oldest_time )
+		{
+			oldest_time = ((RAM_STORAGE__T_ELEMENT*)browser)->time;
+		}
+		counter++;
+	}
+	return oldest_time;
+}
+
+/**
+ * @brief      Gets the newest time.
+ *
+ * @param      void  The void
+ *
+ * @return     The newest time.
+ */
+static unsigned int get_newest_time(void)
+{
+	RAM_STORAGE__T_ADDRESS_TYPE browser = NULL;
+	/* Start from last added and look for all elements contained in ram storage */
+	browser = RAM_STORAGE_G_ram_handler.write_to;
+	update_descending_browser(&browser);
+	/* The newest one is necesserarly the last one added */
+	return ((RAM_STORAGE__T_ELEMENT*)browser)->time;
+}
+
+void RAM_STORAGE_update_with_oldest_time(unsigned int * oldest_time)
+{
+	*oldest_time = get_oldest_time();
+}
+
+void RAM_STORAGE_update_with_newest_time(unsigned int * newest_time)
+{
+	*newest_time = get_newest_time();
 }
 
 

@@ -47,5 +47,9 @@ int RAM_STORAGE_delete_up_to_time(unsigned int time);
 
 void RAM_STORAGE_print_memory_heap(void);
 
+void RAM_STORAGE_update_with_oldest_time(unsigned int * oldest_time);
+
+void RAM_STORAGE_update_with_newest_time(unsigned int * newest_time);
+
 void print_element(RAM_STORAGE__T_ELEMENT elem);
 #endif
