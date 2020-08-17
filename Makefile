@@ -29,6 +29,7 @@ INCLUDES   += -Isrc/state_manager/
 INCLUDES   += -Isrc/tcp_server/
 INCLUDES   += -Isrc/static-allocation/
 INCLUDES   += -Isrc/ram_storage/
+INCLUDES   += -Isrc/packet_store_sdcard/
 
 OPTIMIZATION	= -O0
 DEF_THREAD = -D_REENTRANT
@@ -47,6 +48,7 @@ VPATH   += src/state_manager/
 VPATH   += src/tcp_server/
 VPATH   += src/static-allocation/
 VPATH   += src/ram_storage/
+VPATH   += src/packet_store_sdcard/
 
 # Objects build from C source files
 C_OBJECTS	 = main.o
@@ -58,6 +60,7 @@ C_OBJECTS	+= state_mission.o
 C_OBJECTS	+= tcp_server.o
 C_OBJECTS	+= static_allocation.o
 C_OBJECTS	+= ram_storage.o
+C_OBJECTS	+= packet_store_sdcard.o
 
 #Append OBJ and BIN directories to output filename
 OUTPUT_BIN	= $(BIN)/$(OUTPUT).bin

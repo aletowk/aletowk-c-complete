@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ram_storage.h"
+#include "packet_store_sdcard.h"
 
 /**
  * @brief      Main function of the API
@@ -12,6 +12,6 @@
  */
 int main(void)
 {
-	test_ram_storage();
+	test_packet_store_sdcard();
 	return 0;
 }
