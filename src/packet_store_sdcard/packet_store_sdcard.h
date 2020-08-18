@@ -6,17 +6,23 @@
 
 #define PACKET_STORE_SDCARD__C_MAX_TM_LENGTH (10)
 
-#define PACKET_STORE_SDCARD__C_MAX_TM_NUMBER (4)
+#define PACKET_STORE_SDCARD__C_MAX_TM_NUMBER (5)
 
 typedef struct _PACKET_STORE_SDCARD__T_FILE_HANDLER
 {
+	long head;
+	long tail;
+
+	long write_to;
+
 	unsigned int tm_number;
+
 	long oldest_tm_position;
 	unsigned int oldest_time;
-	long newest_tm_position;
+	
+	// long newest_tm_position; // shoudl be write_to minus 1 element
 	unsigned int newest_time;
 } __attribute__((packed)) PACKET_STORE_SDCARD__T_FILE_HANDLER;
-
 
 typedef struct _PACKET_STORE_SDCARD__T_ELEMENT
 {
