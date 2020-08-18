@@ -15,7 +15,7 @@ typedef struct _PACKET_STORE_SDCARD__T_FILE_HANDLER
 	unsigned int oldest_time;
 	long newest_tm_position;
 	unsigned int newest_time;
-}PACKET_STORE_SDCARD__T_FILE_HANDLER;
+} __attribute__((packed)) PACKET_STORE_SDCARD__T_FILE_HANDLER;
 
 
 typedef struct _PACKET_STORE_SDCARD__T_ELEMENT
@@ -39,6 +39,7 @@ int PACKET_STORE_SDCARD_read_elements_between_two_dates(PACKET_STORE_SDCARD__T_E
 	 													unsigned int start_time, 
 	 													unsigned int end_time );
 
+int PACKET_STORE_SDCARD_delete_up_to_time(unsigned int time);
 
 void PACKET_STORE_SDCARD_get_info(void);
 

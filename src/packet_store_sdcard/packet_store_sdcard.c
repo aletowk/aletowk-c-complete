@@ -19,6 +19,8 @@ static PACKET_STORE_SDCARD__T_FILE_HANDLER    PACKET_STORE_SDCARD_G_file_handler
 													.newest_tm_position = 0
 												};
 
+static const PACKET_STORE_SDCARD__T_ELEMENT null_element;
+
 
 static int update_info_file(void);
 
@@ -87,6 +89,19 @@ void test_packet_store_sdcard(void)
 	{
 		print_element_list(readable_list,read_number);
 	}
+
+
+	/* Delete */
+	printf("Type up time to delete :\n");
+	end_read = getchar();
+	getchar();
+	end_read = atoi((char*)&end_read);
+	ret = PACKET_STORE_SDCARD_delete_up_to_time(end_read);
+	if(ret)
+	{
+		printf("Delete up to %d failed code : %d\n\r",end_read,ret);
+	}
+
 }
 
 
@@ -121,6 +136,9 @@ int PACKET_STORE_SDCARD_init(void)
 		fread(&PACKET_STORE_SDCARD_G_file_handler,sizeof(PACKET_STORE_SDCARD_G_file_handler),1,fp);
 		fclose(fp);
 	}
+
+	// Init null element:
+	memset((void*)&null_element,0,sizeof(null_element));
 	return 0;
 }
 
@@ -390,6 +408,71 @@ int PACKET_STORE_SDCARD_read_elements_between_two_dates(PACKET_STORE_SDCARD__T_E
 			}
 		}
 	}
+	return 0;
+}
+
+
+int PACKET_STORE_SDCARD_delete_up_to_time(unsigned int time)
+{
+	unsigned int i = 0;
+	unsigned int stop = 0;
+	int ret = 0;
+	long end_pos = 0;
+	FILE* fp = NULL;
+	if(time >= PACKET_STORE_SDCARD_G_file_handler.newest_time)
+	{
+		// Delete all
+		fp = fopen(PACKET_STORE_SDCARD__C_FILENAME,"w");
+		if(!fp)
+		{
+			return 1;
+		}
+		fseek(fp,PACKET_STORE_SDCARD_G_file_handler.oldest_tm_position,SEEK_SET);
+		for(i = 0; i < PACKET_STORE_SDCARD_G_file_handler.tm_number ; i++)
+		{
+			fwrite(&null_element,1,sizeof(null_element),fp);
+		}
+		fclose(fp);
+		PACKET_STORE_SDCARD_G_file_handler.tm_number = 0;
+		PACKET_STORE_SDCARD_G_file_handler.oldest_tm_position = 0;
+		PACKET_STORE_SDCARD_G_file_handler.oldest_time = 0;
+		PACKET_STORE_SDCARD_G_file_handler.newest_tm_position = 0;
+		PACKET_STORE_SDCARD_G_file_handler.newest_time = 0;
+	}
+	else
+	{
+		// Search for end time
+		ret = serch_for_end_time_position_in_file(&end_pos,time);
+		if(ret)
+		{
+			printf("[PACKET_STORE_SDCARD_delete_up_to_time] End time : %d not found !\n\r",time);
+			return 2;
+		}
+		fp = fopen(PACKET_STORE_SDCARD__C_FILENAME,"w");
+		if(!fp)
+		{
+			return 1;
+		}
+		fseek(fp,PACKET_STORE_SDCARD_G_file_handler.oldest_tm_position,SEEK_SET);
+		stop = ( (end_pos - PACKET_STORE_SDCARD_G_file_handler.oldest_tm_position)/sizeof(PACKET_STORE_SDCARD__T_ELEMENT)) + 1;
+		for(i = 0 ; i < stop ; i++)
+		{
+			fwrite(&null_element,1,sizeof(null_element),fp);		
+		}
+		PACKET_STORE_SDCARD_G_file_handler.tm_number -= stop;
+		PACKET_STORE_SDCARD_G_file_handler.oldest_tm_position = ftell(fp);
+		fclose(fp);
+		fp = fopen(PACKET_STORE_SDCARD__C_FILENAME,"r");
+		if(!fp)
+		{
+			return 1;
+		}
+		fseek(fp,PACKET_STORE_SDCARD_G_file_handler.oldest_tm_position,SEEK_SET);
+		fread(&PACKET_STORE_SDCARD_G_file_handler.oldest_time,1,sizeof(unsigned int),fp );
+		fclose(fp);
+	}
+	
+	update_info_file();
 	return 0;
 }
 
