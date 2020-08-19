@@ -76,35 +76,51 @@ void test_packet_store_sdcard(void)
 	printf("Type start_read : \n");
 	start_read = getchar();
 	getchar();
-	start_read = atoi((char*)&start_read);
-	printf("Type end_read : \n");
+	if(start_read != 'n')
+	{
+		start_read = atoi((char*)&start_read);
+		printf("Type end_read : \n");
+		end_read = getchar();
+		getchar();
+		end_read = atoi((char*)&end_read);
+
+		ret = PACKET_STORE_SDCARD_read_elements_between_two_dates(readable_list,PACKET_STORE_SDCARD__M_GET_1D_ARRAY_LENGTH(readable_list),
+																  &read_number, start_read,end_read);
+		if(ret)
+		{
+			printf("[PACKET STORE SDCARD] PACKET_STORE_SDCARD_read_elements_between_two_dates failed code : %d\n\r",ret);
+		}
+		else
+		{
+			print_element_list(readable_list,read_number);
+		}
+	}
+	
+	/* Delete */
+	printf("Type up time to delete :\n");
 	end_read = getchar();
 	getchar();
-	end_read = atoi((char*)&end_read);
-
-	ret = PACKET_STORE_SDCARD_read_elements_between_two_dates(readable_list,PACKET_STORE_SDCARD__M_GET_1D_ARRAY_LENGTH(readable_list),
-															  &read_number, start_read,end_read);
-	if(ret)
+	if(end_read != 'n')
 	{
-		printf("[PACKET STORE SDCARD] PACKET_STORE_SDCARD_read_elements_between_two_dates failed code : %d\n\r",ret);
+		end_read = atoi((char*)&end_read);
+		ret = PACKET_STORE_SDCARD_delete_up_to_time(end_read);
+		if(ret)
+		{
+			printf("Delete up to %d failed code : %d\n\r",end_read,ret);
+		}
 	}
-	else
+	
+	for(i = 0; i < 4; i++)
 	{
-		print_element_list(readable_list,read_number);
+		get_time(storage_time_array);
+		ret = PACKET_STORE_SDCARD_store_callback(NULL,test_sample,sizeof(test_sample),storage_time_array);
+		if(ret != 0)
+		{
+			printf("[PACKET STORE SDCARD] PACKET_STORE_SDCARD_store_callback error code : %d\n\r",ret);
+		}
 	}
 
-
-	/* Delete */
-	// printf("Type up time to delete :\n");
-	// end_read = getchar();
-	// getchar();
-	// end_read = atoi((char*)&end_read);
-	// ret = PACKET_STORE_SDCARD_delete_up_to_time(end_read);
-	// if(ret)
-	// {
-	// 	printf("Delete up to %d failed code : %d\n\r",end_read,ret);
-	// }
-
+	PACKET_STORE_SDCARD_get_info();
 }
 
 int PACKET_STORE_SDCARD_init(void)
