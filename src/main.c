@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "packet_store_sdcard.h"
+#include "cut_tm.h"
 
 /**
  * @brief      Main function of the API
@@ -12,6 +12,6 @@
  */
 int main(void)
 {
-	test_packet_store_sdcard();
+	test_cut_tm();
 	return 0;
 }

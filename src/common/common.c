@@ -9,7 +9,11 @@ void print_array_bytes(void* buffer,unsigned int size)
 
 	for( i = 0 ; i < size ; i++)
 	{
-		printf("0x%X ",charBuffer[i]);
+		if(i%8 == 0)
+		{
+			printf("\n\r");
+		}
+		printf("0x%02X ",charBuffer[i]);
 	}
 	printf("\n\r");
 }
