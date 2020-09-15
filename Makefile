@@ -34,8 +34,8 @@ INCLUDES   += -Isrc/cut_tm/
 
 OPTIMIZATION	= -O0
 DEF_THREAD = -D_REENTRANT
-CFLAGS	= $(OPTIMIZATION) -Wall -Wextra -g $(DEF_THREAD) 
-LDFLAGS = $(OPTIMIZATION) -Wall -Wextra -g $(DEF_THREAD)
+CFLAGS	= $(OPTIMIZATION) -Wall -Wextra -g3 $(DEF_THREAD) 
+LDFLAGS = $(OPTIMIZATION) -Wall -Wextra -g3 $(DEF_THREAD)
 LDLIBS = -lpthread
 #-------------------------------------------------------------------------------
 #		FILES
