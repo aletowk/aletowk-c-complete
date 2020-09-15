@@ -32,12 +32,9 @@ void test_cut_tm(void)
 	}
 
 	cut_the_tm(fp,octet_size,&number_of_parts);
-
-	save_to_new_file();
-
-	reconstruct();
-
 	fclose(fp);
+	save_to_new_file();
+	reconstruct();
 }
 
 
@@ -49,11 +46,13 @@ void cut_the_tm(FILE* fp, unsigned int base_size, TOTAL_PART_NUMBER__T * _number
 	unsigned int file_offset = 0;
 	unsigned int output_offset = 0;
 	unsigned int part_size = 0;
+	unsigned int remainder = 0;
 	unsigned char partFileBuff[C__MAX_PART_SIZE] = {0};
 
 	// Get number of parts:
 	*_number_of_parts = (base_size / C__MAX_PART_SIZE);
-	if((base_size%C__MAX_PART_SIZE) != 0)
+	remainder = base_size%C__MAX_PART_SIZE;
+	if((remainder) != 0)
 	{
 		*(_number_of_parts) += 1;
 	}
@@ -77,7 +76,7 @@ void cut_the_tm(FILE* fp, unsigned int base_size, TOTAL_PART_NUMBER__T * _number
 		}
 		else
 		{
-			part_size = (base_size % C__MAX_PART_SIZE);
+			part_size = remainder;
 		}
 
 		fseek(fp,file_offset,SEEK_SET);
@@ -128,6 +127,7 @@ void reconstruct(void)
 {
 	FILE * fp_out = NULL;
 	FILE*  fp_in = NULL;
+	int ret = 0;
 	const char out_filename[] = "./src/cut_tm/out_reconstructed.bin";
 	const char in_filename[]  = "./src/cut_tm/out_file.bin";
 
@@ -157,17 +157,31 @@ void reconstruct(void)
 		if( i < tmp_total_size - 1)
 		{
 			fread(tmp_buffer,LPUS_TM_CONFIGURATION__C_MAX_TOTAL_LENGTH,1,fp_in);
-			fwrite(&tmp_buffer[2],C__MAX_PART_SIZE,1,fp_out);
+			fwrite(&tmp_buffer[C__SIZEOF_TOTAL_NUMBER_FIELD+C__SIZEOF_ACTUAL_PART_FIELD],
+				   C__MAX_PART_SIZE,
+				   1,
+				   fp_out);
 		}
 		else
 		{
 			// It could remains less then LPUS_TM_CONFIGURATION__C_MAX_TOTAL_LENGTH TO READ:
 			last_part = output_size - offset;
 			fread(tmp_buffer,last_part,1,fp_in);
-			fwrite(&tmp_buffer[2],last_part - C__SIZEOF_TOTAL_NUMBER_FIELD - C__SIZEOF_ACTUAL_PART_FIELD,1,fp_out);
+			fwrite(&tmp_buffer[C__SIZEOF_TOTAL_NUMBER_FIELD+C__SIZEOF_ACTUAL_PART_FIELD],
+				   last_part - C__SIZEOF_TOTAL_NUMBER_FIELD - C__SIZEOF_ACTUAL_PART_FIELD,
+				   1,
+				   fp_out);
 		}
 		offset += LPUS_TM_CONFIGURATION__C_MAX_TOTAL_LENGTH;
 	}
-	fclose(fp_in);
+	ret = fclose(fp_in);
+	if(ret)
+	{
+		printf("[reconstruct] Error while closing fp_in\n\r");
+	}
 	fclose(fp_out);
+	if(ret)
+	{
+		printf("[reconstruct] Error while closing fp_out\n\r");
+	}
 }
