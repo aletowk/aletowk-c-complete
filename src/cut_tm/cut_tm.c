@@ -131,7 +131,7 @@ void reconstruct(void)
 	const char out_filename[] = "./src/cut_tm/out_reconstructed.bin";
 	const char in_filename[]  = "./src/cut_tm/out_file.bin";
 
-	unsigned char tmp_buffer[C__MAX_PART_SIZE] = {0};
+	unsigned char tmp_buffer[LPUS_TM_CONFIGURATION__C_MAX_TOTAL_LENGTH] = {0};
 	TOTAL_PART_NUMBER__T tmp_total_size = 0;
 	unsigned int offset = 0;
 	unsigned int last_part = 0;
