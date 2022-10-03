@@ -31,6 +31,7 @@ INCLUDES   += -Isrc/static-allocation/
 INCLUDES   += -Isrc/ram_storage/
 INCLUDES   += -Isrc/packet_store_sdcard/
 INCLUDES   += -Isrc/cut_tm/
+INCLUDES   += -Isrc/binary_search/
 
 OPTIMIZATION	= -O0
 DEF_THREAD = -D_REENTRANT
@@ -51,6 +52,8 @@ VPATH   += src/static-allocation/
 VPATH   += src/ram_storage/
 VPATH   += src/packet_store_sdcard/
 VPATH   += src/cut_tm/
+VPATH   += src/binary_search/
+
 
 # Objects build from C source files
 C_OBJECTS	 = main.o
@@ -64,6 +67,7 @@ C_OBJECTS	+= static_allocation.o
 C_OBJECTS	+= ram_storage.o
 C_OBJECTS	+= packet_store_sdcard.o
 C_OBJECTS	+= cut_tm.o
+C_OBJECTS	+= binary_search.o
 
 #Append OBJ and BIN directories to output filename
 OUTPUT_BIN	= $(BIN)/$(OUTPUT).bin

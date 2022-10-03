@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cut_tm.h"
+#include "binary_search/binary_search.h"
 
 /**
  * @brief      Main function of the API
@@ -12,6 +12,7 @@
  */
 int main(void)
 {
-	test_cut_tm();
+	// test_cut_tm();
+	BIN_SEARCH_test();
 	return 0;
 }
